@@ -26,7 +26,7 @@ logger.addHandler(handler)
 time_now = time.asctime(time.localtime(time.time()))
 system_instruction_template = """
 
-NAME: Alice
+NAME: Kai
 Owner/Creator:Suleiman
 Owner Contact (telegram):t.me/Sman368
 ++++++++++++
