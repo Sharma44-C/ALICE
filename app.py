@@ -6,8 +6,6 @@ from dotenv import load_dotenv
 from flask_cors import CORS
 import requests
 import messageHandler
-import time
-from collections import deque
 from brain import query
 
 # Load environment variables
@@ -87,18 +85,17 @@ def webhook():
                 if "message" in event:
                     sender_id = event["sender"]["id"]
                     message_text = event["message"].get("text")
-                    message_attachments = event["message"].get("attachments")
-
                     if message_text:
                         save_message(sender_id, message_text, is_bot=False)
                         conversation_history = get_last_messages(sender_id, 15)
                         full_message = "Conversation so far:\n{}\n\nUser: {}".format(
                             '\n'.join(reversed(conversation_history)), message_text)
                         response = messageHandler.handle_text_message(full_message, message_text)
-                        save_message(sender_id, response, is_bot=True)
-                        send_message(sender_id, response)
+                        bot_response = f"Kai: {response}"
+                        save_message(sender_id, bot_response, is_bot=True)
+                        send_message(sender_id, bot_response)
                     else:
-                        default_response = "👍"
+                        default_response = "Kai: 👍"
                         save_message(sender_id, default_response, is_bot=True)
                         send_message(sender_id, default_response)
 
@@ -107,7 +104,7 @@ def webhook():
 def send_message(recipient_id, message=None):
     params = {"access_token": PAGE_ACCESS_TOKEN}
     if not isinstance(message, str):
-        message = str(message) if message else "An error occurred while processing your request."
+        message = str(message) if message else "Kai: An error occurred while processing your request."
     data = {
         "recipient": {"id": recipient_id},
         "message": {"text": message},
@@ -146,9 +143,10 @@ def api():
     full_message = "Conversation so far:\n{}\n\nUser: {}".format(
         '\n'.join(reversed(conversation_history)), user_query)
     response = messageHandler.handle_text_message(full_message, user_query)
-    save_message(session_id, response, is_bot=True)
+    bot_response = f"Kai: {response}"
+    save_message(session_id, bot_response, is_bot=True)
 
-    return jsonify({"response": response})
+    return jsonify({"response": bot_response})
 
 @app.route('/api2', methods=['GET'])
 def api2():
