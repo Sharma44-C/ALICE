@@ -55,7 +55,7 @@ def get_last_messages(user_id, n):
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute('''
-        SELECT message, is_bot 
+        SELECT message 
         FROM messages 
         WHERE user_id = ? 
         ORDER BY timestamp DESC 
@@ -63,7 +63,7 @@ def get_last_messages(user_id, n):
     ''', (user_id, n))
     messages = cursor.fetchall()
     conn.close()
-    return [f"{'Bot' if msg['is_bot'] else 'User'}: {msg['message']}" for msg in messages]
+    return [msg['message'] for msg in messages]
 
 @app.route('/webhook', methods=['GET'])
 def verify():
